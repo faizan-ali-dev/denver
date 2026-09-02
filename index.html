@@ -75,6 +75,21 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
+        /* Custom scrollbar for constrained divs */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: rgba(17, 34, 64, 0.4); 
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(192, 145, 47, 0.5); 
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: rgba(192, 145, 47, 0.8); 
+        }
     </style>
 </head>
 <body class="font-sans antialiased selection:bg-gold selection:text-darkblue-900">
@@ -150,7 +165,7 @@
             
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <!-- Flatwater Realty -->
-                <a href="#" class="glass-card rounded-2xl p-8 flex flex-col group relative overflow-hidden h-full">
+                <a href="https://www.flatwaterrealty.com" target="_blank" rel="noopener noreferrer" class="glass-card rounded-2xl p-8 flex flex-col group relative overflow-hidden h-full">
                     <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-gold-light to-gold opacity-0 group-hover:opacity-100 transition-opacity"></div>
                     <div class="w-14 h-14 bg-darkblue-900 border border-gold/30 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                         <i class="fa-solid fa-house text-gold text-2xl"></i>
@@ -209,26 +224,23 @@
     </section>
 
     <!-- Bio Section -->
-    <section id="bio" class="py-24 bg-darkblue-900">
-        <div class="max-w-7xl mx-auto px-6">
-            <div class="flex flex-col lg:flex-row items-center gap-16">
-                <!-- Headshot Placeholder -->
-                <div class="w-full lg:w-5/12">
-                    <div class="relative rounded-3xl overflow-hidden aspect-[4/5] border border-white/10 group">
-                        <!-- Placeholder background until photo is provided -->
-                        <div class="absolute inset-0 bg-gradient-to-br from-darkblue-700 to-darkblue-900 flex items-center justify-center">
-                            <span class="font-serif text-3xl text-gray-500 text-center px-6">Headshot Image Pending</span>
-                        </div>
-                        <div class="absolute inset-0 border-2 border-gold/20 rounded-3xl m-4"></div>
+    <section id="bio" class="py-12 bg-darkblue-900">
+        <div class="max-w-6xl mx-auto px-6">
+            <div class="flex flex-col lg:flex-row items-center gap-10">
+                <!-- Headshot -->
+                <div class="w-full lg:w-4/12">
+                    <div class="relative rounded-3xl overflow-hidden aspect-[3/4] border border-white/10 group max-w-sm mx-auto lg:mx-0">
+                        <img src="headshot.png" alt="Alex J. Heyen Headshot" class="w-full h-full object-cover">
+                        <div class="absolute inset-0 border-2 border-gold/20 rounded-3xl m-3"></div>
                     </div>
                 </div>
                 
                 <!-- Bio Content -->
-                <div class="w-full lg:w-7/12">
-                    <h2 class="text-gold tracking-[0.2em] uppercase text-xs font-bold mb-3">About</h2>
-                    <h3 class="font-serif text-4xl md:text-5xl font-bold mb-8">Meet Alex J. Heyen</h3>
+                <div class="w-full lg:w-8/12">
+                    <h2 class="text-gold tracking-[0.2em] uppercase text-xs font-bold mb-2">About</h2>
+                    <h3 class="font-serif text-3xl md:text-4xl font-bold mb-4">Meet Alex J. Heyen</h3>
                     
-                    <div class="space-y-6 text-gray-300 font-light text-lg leading-relaxed">
+                    <div class="space-y-4 text-gray-300 font-light text-base leading-relaxed">
                         <p>
                             With extensive experience spanning multiple facets of the real estate and financial sectors, I have dedicated my career to providing comprehensive, seamless solutions for my clients. My approach is built on integrity, deep market knowledge, and an unwavering commitment to exceptional service.
                         </p>
@@ -240,8 +252,8 @@
                         </p>
                     </div>
                     
-                    <div class="mt-10">
-                        <span class="font-signature text-5xl text-gold/70">Alex J. Heyen</span>
+                    <div class="mt-6">
+                        <span class="font-signature text-4xl text-gold/70">Alex J. Heyen</span>
                     </div>
                 </div>
             </div>
@@ -278,61 +290,54 @@
         </div>
     </section>
 
-    <!-- Calendar & Contact Section -->
-    <section id="contact" class="py-24 bg-darkblue-900">
-        <div class="max-w-7xl mx-auto px-6">
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-16">
-                
-                <!-- Schedule Meeting (Go High Level) -->
-                <div id="schedule">
-                    <h2 class="text-gold tracking-[0.2em] uppercase text-xs font-bold mb-3">Booking</h2>
-                    <h3 class="font-serif text-3xl font-bold mb-6">Schedule a Meeting</h3>
-                    <p class="text-gray-400 font-light mb-8">
-                        Select a convenient time for a private consultation to discuss your specific needs.
-                    </p>
-                    <div class="glass-card rounded-2xl p-4 min-h-[500px] flex items-center justify-center border-dashed border-2 border-white/10">
-                        <div class="text-center px-4">
-                            <i class="fa-regular fa-calendar-check text-4xl text-gray-500 mb-4"></i>
-                            <h4 class="font-serif text-xl text-white mb-2">Go High Level Calendar</h4>
-                            <p class="text-sm text-gray-500">The embed code from Go High Level will be placed here to display your booking calendar directly on the site.</p>
-                        </div>
+    <!-- Calendar Section -->
+    <section id="schedule" class="py-10 bg-darkblue-900 border-b border-white/5">
+        <div class="max-w-5xl mx-auto px-6 text-center">
+            <h2 class="text-gold tracking-[0.2em] uppercase text-xs font-bold mb-2">Booking</h2>
+            <h3 class="font-serif text-3xl md:text-4xl font-bold mb-4">Schedule a Meeting</h3>
+            <p class="text-gray-400 font-light mb-8">
+                Select a convenient time for a private consultation to discuss your specific needs.
+            </p>
+            <div class="glass-card rounded-3xl p-4 shadow-2xl text-left h-[500px] overflow-y-auto custom-scrollbar">
+                <iframe src="https://api.leadconnectorhq.com/widget/booking/OhDCGp5O3JBKdWy1ZUR1" allow="payment" style="width: 100%;border:none;overflow: hidden;" scrolling="auto" id="OhDCGp5O3JBKdWy1ZUR1_1788365740700"></iframe><br><script src="https://link.msgsndr.com/js/form_embed.js" type="text/javascript"></script>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-24 bg-darkblue-800">
+        <div class="max-w-3xl mx-auto px-6">
+            <div class="text-center mb-12">
+                <h2 class="text-gold tracking-[0.2em] uppercase text-xs font-bold mb-3">Inquiries</h2>
+                <h3 class="font-serif text-3xl md:text-4xl font-bold mb-6">Get In Touch</h3>
+                <p class="text-gray-400 font-light">
+                    Prefer to send a message? Fill out the form below and our team will get back to you promptly.
+                </p>
+            </div>
+            
+            <form class="space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="name" class="block text-xs font-medium text-gray-400 uppercase tracking-wider mb-2">Full Name</label>
+                        <input type="text" id="name" class="w-full bg-darkblue-900 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold transition-colors" placeholder="e.g., Michael Smith">
+                    </div>
+                    <div>
+                        <label for="email" class="block text-xs font-medium text-gray-400 uppercase tracking-wider mb-2">Email Address</label>
+                        <input type="email" id="email" class="w-full bg-darkblue-900 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold transition-colors" placeholder="e.g., michael@company.com">
                     </div>
                 </div>
-
-                <!-- Contact Form -->
                 <div>
-                    <h2 class="text-gold tracking-[0.2em] uppercase text-xs font-bold mb-3">Inquiries</h2>
-                    <h3 class="font-serif text-3xl font-bold mb-6">Get In Touch</h3>
-                    <p class="text-gray-400 font-light mb-8">
-                        Prefer to send a message? Fill out the form below and our team will get back to you promptly.
-                    </p>
-                    
-                    <form class="space-y-6">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div>
-                                <label for="name" class="block text-xs font-medium text-gray-400 uppercase tracking-wider mb-2">Full Name</label>
-                                <input type="text" id="name" class="w-full bg-darkblue-800 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold transition-colors" placeholder="John Doe">
-                            </div>
-                            <div>
-                                <label for="email" class="block text-xs font-medium text-gray-400 uppercase tracking-wider mb-2">Email Address</label>
-                                <input type="email" id="email" class="w-full bg-darkblue-800 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold transition-colors" placeholder="john@example.com">
-                            </div>
-                        </div>
-                        <div>
-                            <label for="phone" class="block text-xs font-medium text-gray-400 uppercase tracking-wider mb-2">Phone Number</label>
-                            <input type="tel" id="phone" class="w-full bg-darkblue-800 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold transition-colors" placeholder="(555) 123-4567">
-                        </div>
-                        <div>
-                            <label for="message" class="block text-xs font-medium text-gray-400 uppercase tracking-wider mb-2">Message</label>
-                            <textarea id="message" rows="4" class="w-full bg-darkblue-800 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold transition-colors resize-none" placeholder="How can we assist you?"></textarea>
-                        </div>
-                        <button type="button" class="w-full px-8 py-4 bg-gold hover:bg-gold-dark text-white text-sm font-semibold tracking-wide uppercase rounded-lg transition-all shadow-[0_4px_14px_0_rgba(192,145,47,0.39)]">
-                            Send Message
-                        </button>
-                    </form>
+                    <label for="phone" class="block text-xs font-medium text-gray-400 uppercase tracking-wider mb-2">Phone Number</label>
+                    <input type="tel" id="phone" class="w-full bg-darkblue-900 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold transition-colors" placeholder="e.g., (303) 555-0198">
                 </div>
-                
-            </div>
+                <div>
+                    <label for="message" class="block text-xs font-medium text-gray-400 uppercase tracking-wider mb-2">Message</label>
+                    <textarea id="message" rows="4" class="w-full bg-darkblue-900 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold transition-colors resize-none" placeholder="Please describe your real estate or financing needs..."></textarea>
+                </div>
+                <button type="button" class="w-full px-8 py-4 bg-gold hover:bg-gold-dark text-white text-sm font-semibold tracking-wide uppercase rounded-lg transition-all shadow-[0_4px_14px_0_rgba(192,145,47,0.39)]">
+                    Send Message
+                </button>
+            </form>
         </div>
     </section>
 

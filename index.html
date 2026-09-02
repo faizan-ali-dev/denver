@@ -16,6 +16,10 @@
     <!-- FontAwesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
+    <!-- Leaflet CSS & JS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
     <!-- Tailwind CSS (CDN) -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -90,6 +94,10 @@
         .custom-scrollbar::-webkit-scrollbar-thumb:hover {
             background: rgba(192, 145, 47, 0.8); 
         }
+        /* Leaflet Dark Map Invert Trick */
+        .dark-map-tiles {
+            filter: invert(100%) hue-rotate(180deg) brightness(85%) contrast(110%);
+        }
     </style>
 </head>
 <body class="font-sans antialiased selection:bg-gold selection:text-darkblue-900">
@@ -106,7 +114,7 @@
                 <a href="#services" class="text-sm tracking-widest uppercase font-medium text-gray-300 hover:text-gold transition-colors">Services</a>
                 <a href="#bio" class="text-sm tracking-widest uppercase font-medium text-gray-300 hover:text-gold transition-colors">About</a>
                 <a href="#contact" class="text-sm tracking-widest uppercase font-medium text-gray-300 hover:text-gold transition-colors">Contact</a>
-                <a href="#schedule" class="px-5 py-2.5 bg-gold hover:bg-gold-dark text-white text-sm font-semibold tracking-wide uppercase rounded-full transition-all shadow-[0_0_15px_rgba(192,145,47,0.4)]">Schedule Meeting</a>
+                <a href="schedule.html" class="px-5 py-2.5 bg-gold hover:bg-gold-dark text-white text-sm font-semibold tracking-wide uppercase rounded-full transition-all shadow-[0_0_15px_rgba(192,145,47,0.4)]">Schedule Meeting</a>
             </div>
 
             <!-- Mobile Menu Button -->
@@ -121,36 +129,51 @@
                 <a href="#services" class="text-sm tracking-widest uppercase font-medium text-gray-300 hover:text-gold transition-colors">Services</a>
                 <a href="#bio" class="text-sm tracking-widest uppercase font-medium text-gray-300 hover:text-gold transition-colors">About</a>
                 <a href="#contact" class="text-sm tracking-widest uppercase font-medium text-gray-300 hover:text-gold transition-colors">Contact</a>
-                <a href="#schedule" class="text-sm tracking-widest uppercase font-medium text-gold transition-colors">Schedule Meeting</a>
+                <a href="schedule.html" class="text-sm tracking-widest uppercase font-medium text-gold transition-colors">Schedule Meeting</a>
             </div>
         </div>
     </nav>
 
-    <!-- Hero Section -->
-    <header class="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
-        <!-- Background Image & Overlay -->
-        <div class="absolute inset-0">
-            <img src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?q=80&w=2075&auto=format&fit=crop" alt="Luxury Real Estate" class="w-full h-full object-cover">
-            <div class="absolute inset-0 bg-darkblue-900/65"></div>
-        </div>
-        <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-gold/20 rounded-full blur-[120px]"></div>
-        <div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-gold/10 rounded-full blur-[120px]"></div>
-        
-        <div class="relative z-10 text-center px-6 max-w-4xl mx-auto animate-fade-in-up">
-            <h2 class="text-gold tracking-[0.2em] uppercase text-xs md:text-sm font-bold mb-6">Expertise & Integrity</h2>
-            <h1 class="font-serif text-5xl md:text-7xl font-bold mb-6 leading-tight">
-                Navigating your financial and real estate journey.
-            </h1>
-            <p class="text-gray-400 text-lg md:text-xl font-light mb-10 max-w-2xl mx-auto">
-                Comprehensive solutions spanning Real Estate, Mortgage Lending, Title Insurance, and Dual License Coaching.
-            </p>
-            <div class="flex flex-col sm:flex-row justify-center items-center gap-6">
-                <a href="#services" class="px-8 py-4 bg-gold hover:bg-gold-dark text-white text-sm font-semibold tracking-wide uppercase rounded-full transition-all shadow-[0_0_20px_rgba(192,145,47,0.3)] w-full sm:w-auto">
+    <!-- Hero / Bio Section -->
+    <header id="hero" class="relative bg-darkblue-900 overflow-hidden h-screen flex items-center justify-center pt-24">
+        <!-- Background Video Placeholder -->
+        <video autoplay loop muted playsinline class="absolute inset-0 w-full h-full object-cover z-0 opacity-20">
+            <!-- Replace this src with your actual introduction video URL -->
+            <source src="https://assets.mixkit.co/videos/preview/mixkit-modern-city-skyline-at-sunset-10025-large.mp4" type="video/mp4">
+        </video>
+        <!-- Overlay -->
+        <div class="absolute inset-0 bg-darkblue-900/70 z-0"></div>
+
+        <div class="max-w-5xl mx-auto px-6 relative z-10 w-full text-center">
+            
+            <!-- Headshot -->
+            <div class="mx-auto w-32 h-32 md:w-40 md:h-40 rounded-full overflow-hidden border-4 border-gold/30 shadow-2xl mb-6 relative group">
+                <img src="headshot.png" alt="Alex J. Heyen Headshot" class="w-full h-full object-cover">
+                <div class="absolute inset-0 rounded-full shadow-inner shadow-black/50 pointer-events-none"></div>
+            </div>
+            
+            <!-- Bio Content -->
+            <h2 class="text-gold tracking-[0.2em] uppercase text-xs font-bold mb-3">Expertise & Integrity</h2>
+            <h1 class="font-serif text-3xl md:text-5xl font-bold mb-6 leading-tight">Meet Alex J. Heyen</h1>
+            
+            <div class="text-gray-300 font-light text-sm md:text-base leading-relaxed max-w-4xl mx-auto mb-8">
+                <p>
+                    As a dual-licensed professional bridging real estate and finance, I provide comprehensive, seamless solutions for my clients. Whether you are navigating property acquisition through Flatwater Realty, securing optimal financing via District Lending, or protecting your investment with Flatwater Title and Escrow, you receive holistic guidance tailored to your unique goals.
+                </p>
+            </div>
+            
+            <!-- Actions -->
+            <div class="flex flex-col sm:flex-row justify-center items-center gap-4">
+                <a href="#services" class="px-8 py-3.5 bg-gold hover:bg-gold-dark text-white text-xs md:text-sm font-semibold tracking-wide uppercase rounded-full transition-all shadow-[0_0_20px_rgba(192,145,47,0.3)] w-full sm:w-auto text-center">
                     Explore Services
                 </a>
-                <a href="#bio" class="px-8 py-4 bg-transparent border border-gray-500 hover:border-gold text-white hover:text-gold text-sm font-semibold tracking-wide uppercase rounded-full transition-all w-full sm:w-auto">
-                    Meet Alex
-                </a>
+                <button id="open-video-btn" class="px-8 py-3.5 bg-transparent border border-white/30 hover:border-gold hover:bg-white/5 text-white text-xs md:text-sm font-semibold tracking-wide uppercase rounded-full transition-all flex items-center justify-center gap-2 w-full sm:w-auto group">
+                    <i class="fa-solid fa-play text-gold group-hover:scale-110 transition-transform"></i> Watch Video
+                </button>
+            </div>
+            
+            <div class="mt-8 hidden md:block">
+                <span class="font-signature text-2xl md:text-3xl text-gold/50">Alex J. Heyen</span>
             </div>
         </div>
     </header>
@@ -223,84 +246,80 @@
         </div>
     </section>
 
-    <!-- Bio Section -->
-    <section id="bio" class="py-12 bg-darkblue-900">
-        <div class="max-w-6xl mx-auto px-6">
-            <div class="flex flex-col lg:flex-row items-center gap-10">
-                <!-- Headshot -->
-                <div class="w-full lg:w-4/12">
-                    <div class="relative rounded-3xl overflow-hidden aspect-[3/4] border border-white/10 group max-w-sm mx-auto lg:mx-0">
-                        <img src="headshot.png" alt="Alex J. Heyen Headshot" class="w-full h-full object-cover">
-                        <div class="absolute inset-0 border-2 border-gold/20 rounded-3xl m-3"></div>
-                    </div>
-                </div>
-                
-                <!-- Bio Content -->
-                <div class="w-full lg:w-8/12">
-                    <h2 class="text-gold tracking-[0.2em] uppercase text-xs font-bold mb-2">About</h2>
-                    <h3 class="font-serif text-3xl md:text-4xl font-bold mb-4">Meet Alex J. Heyen</h3>
-                    
-                    <div class="space-y-4 text-gray-300 font-light text-base leading-relaxed">
-                        <p>
-                            With extensive experience spanning multiple facets of the real estate and financial sectors, I have dedicated my career to providing comprehensive, seamless solutions for my clients. My approach is built on integrity, deep market knowledge, and an unwavering commitment to exceptional service.
-                        </p>
-                        <p>
-                            As a dual licensed professional, I bridge the gap between complex mortgage structures and dynamic real estate markets. Whether you are navigating property acquisition through Flatwater Realty, securing optimal financing via District Lending, or protecting your investment with Flatwater Title and Escrow, you receive holistic guidance tailored to your unique goals.
-                        </p>
-                        <p>
-                            Beyond direct client advisory, I am passionate about elevating the industry standard. Through my Dual License Coaching programs, I mentor ambitious professionals seeking to expand their capabilities and deliver unparalleled value to their own clients.
-                        </p>
-                    </div>
-                    
-                    <div class="mt-6">
-                        <span class="font-signature text-4xl text-gold/70">Alex J. Heyen</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Map & Coverage Section -->
-    <section class="py-24 bg-darkblue-800 border-t border-b border-white/5 relative overflow-hidden">
+    <!-- Coverage Section -->
+    <section class="py-20 bg-darkblue-800 border-t border-b border-white/5 relative overflow-hidden">
+        <!-- Ambient Glow -->
         <div class="absolute right-0 top-0 w-1/2 h-full bg-darkblue-700/30 blur-3xl rounded-full"></div>
-        <div class="max-w-7xl mx-auto px-6 relative z-10">
-            <div class="flex flex-col lg:flex-row items-center gap-12">
-                <div class="w-full lg:w-1/3">
-                    <h2 class="text-gold tracking-[0.2em] uppercase text-xs font-bold mb-3">Coverage</h2>
-                    <h3 class="font-serif text-3xl md:text-4xl font-bold mb-6">Licensed States</h3>
-                    <p class="text-gray-400 font-light mb-8">
-                        Operating across multiple jurisdictions to serve your needs effectively. The highlighted regions represent active operational licenses.
-                    </p>
-                    <div class="flex flex-wrap gap-3">
-                        <!-- Placeholder state chips -->
-                        <span class="px-4 py-2 border border-gold/30 rounded-full text-sm text-gold bg-gold/5">States Pending Info</span>
-                    </div>
-                </div>
-                
-                <div class="w-full lg:w-2/3">
-                    <div class="glass-card rounded-3xl p-8 aspect-video flex items-center justify-center text-center">
-                        <div>
-                            <i class="fa-solid fa-map-location-dot text-4xl text-gray-500 mb-4"></i>
-                            <p class="font-serif text-xl text-gray-400">Interactive US Map Placeholder</p>
-                            <p class="text-sm text-gray-500 mt-2">Will be populated and color coded with specific states once provided.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <div class="absolute left-0 bottom-0 w-1/3 h-1/2 bg-gold/5 blur-3xl rounded-full"></div>
+        
+        <div class="max-w-7xl mx-auto px-6 relative z-10 text-center">
+            <h2 class="text-gold tracking-[0.2em] uppercase text-xs font-bold mb-3">Coverage</h2>
+            <h3 class="font-serif text-3xl md:text-5xl font-bold mb-6">Licensed States</h3>
+            <p class="text-gray-400 font-light mb-12 max-w-2xl mx-auto">
+                Operating across multiple jurisdictions to serve your needs effectively. We are proud to hold active operational licenses and local market expertise in the following regions.
+            </p>
+            
         </div>
+            
+        <!-- Real Interactive Map (Full Width) -->
+        <div class="w-full relative z-20 mt-4">
+            <div id="real-us-map" class="w-full h-[300px] md:h-[400px] z-10" style="background-color: #06101e; border-top: 1px solid rgba(255,255,255,0.05); border-bottom: 1px solid rgba(255,255,255,0.05);"></div>
+        </div>
+            
+        <script>
+                document.addEventListener("DOMContentLoaded", function() {
+                    // Initialize Leaflet map
+                    var map = L.map('real-us-map', {
+                        center: [39.8283, -98.5795], // Center of US
+                        zoom: 4,
+                        zoomControl: true,
+                        scrollWheelZoom: false, // Prevent page scrolling getting trapped
+                        dragging: true
+                    });
+
+                    // Add OpenStreetMap tile layer with CSS invert for free premium dark aesthetic
+                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                        attribution: '&copy; OpenStreetMap contributors',
+                        maxZoom: 10,
+                        minZoom: 3,
+                        className: 'dark-map-tiles'
+                    }).addTo(map);
+
+                    // Function to create Custom Gold Pin with Name
+                    function createPinWithName(name) {
+                        return L.divIcon({
+                            className: 'custom-pin-with-name',
+                            html: "<div style='display:flex; align-items:center; gap:8px; pointer-events:none;'>" +
+                                  "<div style='background-color:#c0912f; width:14px; height:14px; border-radius:50%; box-shadow: 0 0 15px #c0912f; border: 2px solid white; flex-shrink:0;'></div>" +
+                                  "<span style='color: white; font-weight: 700; font-family: Inter, sans-serif; font-size: 14px; text-shadow: 0 2px 4px rgba(0,0,0,0.9), 0 0 10px rgba(0,0,0,0.8); letter-spacing: 1px;'>" + name + "</span>" +
+                                  "</div>",
+                            iconSize: [120, 20],
+                            iconAnchor: [7, 10]
+                        });
+                    }
+
+                    // Coordinates
+                    var coloradoCoords = [39.5501, -105.7821];
+                    var nebraskaCoords = [41.5000, -99.9018];
+
+                    // Add Markers with Names visible by default
+                    L.marker(coloradoCoords, {icon: createPinWithName('COLORADO')}).addTo(map);
+                    L.marker(nebraskaCoords, {icon: createPinWithName('NEBRASKA')}).addTo(map);
+                });
+            </script>
     </section>
 
     <!-- Calendar Section -->
-    <section id="schedule" class="py-10 bg-darkblue-900 border-b border-white/5">
-        <div class="max-w-5xl mx-auto px-6 text-center">
+    <section id="schedule" class="py-24 bg-darkblue-900 border-b border-white/5">
+        <div class="max-w-3xl mx-auto px-6 text-center">
             <h2 class="text-gold tracking-[0.2em] uppercase text-xs font-bold mb-2">Booking</h2>
             <h3 class="font-serif text-3xl md:text-4xl font-bold mb-4">Schedule a Meeting</h3>
             <p class="text-gray-400 font-light mb-8">
-                Select a convenient time for a private consultation to discuss your specific needs.
+                Ready to discuss your specific real estate or financial needs? Click below to access my private calendar and select a convenient time for our consultation.
             </p>
-            <div class="glass-card rounded-3xl p-4 shadow-2xl text-left h-[500px] overflow-y-auto custom-scrollbar">
-                <iframe src="https://api.leadconnectorhq.com/widget/booking/OhDCGp5O3JBKdWy1ZUR1" allow="payment" style="width: 100%;border:none;overflow: hidden;" scrolling="auto" id="OhDCGp5O3JBKdWy1ZUR1_1788365740700"></iframe><br><script src="https://link.msgsndr.com/js/form_embed.js" type="text/javascript"></script>
-            </div>
+            <a href="schedule.html" class="inline-block px-10 py-4 bg-gold hover:bg-gold-dark text-white text-sm font-semibold tracking-wide uppercase rounded-full transition-all shadow-[0_0_20px_rgba(192,145,47,0.3)]">
+                Book a Meeting
+            </a>
         </div>
     </section>
 
@@ -389,6 +408,45 @@
                 navbar.classList.remove('bg-darkblue-900/95', 'backdrop-blur-md', 'border-white/10', 'shadow-lg');
             }
         });
+        // Video Modal Logic
+        const openVideoBtn = document.getElementById('open-video-btn');
+        const closeVideoBtn = document.getElementById('close-video-btn');
+        const videoModal = document.getElementById('video-modal');
+        const modalVideo = document.getElementById('modal-video');
+
+        if (openVideoBtn && closeVideoBtn && videoModal && modalVideo) {
+            openVideoBtn.addEventListener('click', () => {
+                videoModal.classList.remove('hidden');
+                videoModal.classList.add('flex');
+                modalVideo.play();
+            });
+
+            closeVideoBtn.addEventListener('click', () => {
+                videoModal.classList.add('hidden');
+                videoModal.classList.remove('flex');
+                modalVideo.pause();
+                modalVideo.currentTime = 0;
+            });
+
+            // Close on background click
+            videoModal.addEventListener('click', (e) => {
+                if (e.target === videoModal) {
+                    closeVideoBtn.click();
+                }
+            });
+        }
     </script>
+
+    <!-- Video Modal -->
+    <div id="video-modal" class="fixed inset-0 z-[100] hidden items-center justify-center bg-black/95 backdrop-blur-sm p-4">
+        <button id="close-video-btn" class="absolute top-6 right-6 text-white hover:text-gold transition-colors text-3xl focus:outline-none z-10">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+        <div class="relative w-full max-w-5xl aspect-video bg-black rounded-2xl overflow-hidden shadow-[0_0_50px_rgba(192,145,47,0.2)]">
+            <video id="modal-video" controls playsinline class="w-full h-full object-cover">
+                <source src="https://assets.mixkit.co/videos/preview/mixkit-modern-city-skyline-at-sunset-10025-large.mp4" type="video/mp4">
+            </video>
+        </div>
+    </div>
 </body>
 </html>

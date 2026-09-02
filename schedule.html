@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Schedule Meeting - Alex J. Heyen</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:wght@500;600;700&family=Yellowtail&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        darkblue: { 900: '#06101e', 800: '#0a192f', 700: '#112240' },
+                        gold: { DEFAULT: '#c0912f', light: '#e3c98a', dark: '#a87426' }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                        signature: ['Yellowtail', 'cursive'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #06101e; color: #ffffff; }
+        .glass-card {
+            background: rgba(17, 34, 64, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(192, 145, 47, 0.2);
+        }
+        .custom-scrollbar::-webkit-scrollbar { width: 8px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: rgba(17, 34, 64, 0.4); border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(192, 145, 47, 0.5); border-radius: 10px; }
+    </style>
+</head>
+<body class="font-sans antialiased selection:bg-gold selection:text-darkblue-900 flex flex-col min-h-screen">
+
+    <!-- Navigation -->
+    <nav class="w-full bg-darkblue-900 border-b border-white/5 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="index.html" class="flex items-center gap-2 relative z-10 group">
+                <span class="font-signature text-3xl md:text-4xl text-gold group-hover:text-gold-light transition-colors">Alex J. Heyen</span>
+            </a>
+            <div class="hidden md:flex space-x-8 items-center">
+                <a href="index.html#services" class="text-sm tracking-widest uppercase font-medium text-gray-300 hover:text-gold transition-colors">Services</a>
+                <a href="index.html#contact" class="text-sm tracking-widest uppercase font-medium text-gray-300 hover:text-gold transition-colors">Contact</a>
+                <a href="index.html" class="px-5 py-2 border border-white/20 hover:border-gold text-white text-sm font-semibold tracking-wide uppercase rounded-full transition-all">Back to Home</a>
+            </div>
+            <a href="index.html" class="md:hidden text-white text-sm uppercase tracking-widest hover:text-gold border border-white/20 rounded-full px-4 py-1">Home</a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="flex-grow py-12 bg-darkblue-800 flex flex-col items-center">
+        <div class="max-w-6xl w-full mx-auto px-6 text-center">
+            <h2 class="text-gold tracking-[0.2em] uppercase text-xs font-bold mb-2">Private Consultation</h2>
+            <h1 class="font-serif text-3xl md:text-4xl font-bold mb-4">Book a Meeting</h1>
+            <p class="text-gray-400 font-light mb-8 max-w-2xl mx-auto">
+                Select a convenient time below to discuss your specific real estate or financial needs.
+            </p>
+            
+            <!-- GHL Calendar -->
+            <div class="glass-card rounded-3xl p-4 md:p-6 shadow-2xl text-left h-[700px] overflow-y-auto custom-scrollbar w-full">
+                <iframe src="https://api.leadconnectorhq.com/widget/booking/OhDCGp5O3JBKdWy1ZUR1" allow="payment" style="width: 100%;border:none;overflow: hidden; height: 100%;" scrolling="auto" id="OhDCGp5O3JBKdWy1ZUR1_1788365740700"></iframe>
+                <script src="https://link.msgsndr.com/js/form_embed.js" type="text/javascript"></script>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-darkblue-900 border-t border-white/10 py-8 mt-auto">
+        <div class="max-w-7xl mx-auto px-6 text-center">
+            <span class="font-signature text-2xl text-gold/50 mb-4 block">Alex J. Heyen</span>
+            <p class="text-gray-500 text-sm">© 2026 Alex J. Heyen. All rights reserved.</p>
+        </div>
+    </footer>
+
+</body>
+</html>

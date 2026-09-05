@@ -4,21 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Alex J. Heyen</title>
-    
+
     <!-- SEO Meta Tags -->
     <meta name="description" content="Alex J. Heyen: Real Estate, Mortgage, Title Insurance, and Dual License Coaching.">
-    
+
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:wght@500;600;700&family=Yellowtail&display=swap" rel="stylesheet">
-    
+
     <!-- FontAwesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Leaflet CSS & JS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <!-- D3 + TopoJSON for interactive US map -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js"></script>
 
     <!-- Tailwind CSS (CDN) -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -36,6 +36,10 @@
                             DEFAULT: '#c0912f',
                             light: '#e3c98a',
                             dark: '#a87426',
+                        },
+                        mapblue: {
+                            DEFAULT: '#1e6ea8',
+                            light: '#3f8fd0',
                         }
                     },
                     fontFamily: {
@@ -79,24 +83,76 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
-        /* Custom scrollbar for constrained divs */
-        .custom-scrollbar::-webkit-scrollbar {
-            width: 8px;
+        /* Prominent headshot frame */
+        .headshot-frame {
+            position: relative;
+            border: 1px solid rgba(192, 145, 47, 0.4);
+            box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.6),
+                        0 0 0 1px rgba(192, 145, 47, 0.15) inset;
         }
-        .custom-scrollbar::-webkit-scrollbar-track {
-            background: rgba(17, 34, 64, 0.4); 
+        .headshot-frame::before {
+            content: '';
+            position: absolute;
+            inset: -14px;
+            border: 1px solid rgba(192, 145, 47, 0.35);
+            border-radius: inherit;
+            pointer-events: none;
+        }
+        /* Service card logo containers */
+        .logo-plate {
+            background: #ffffff;
+            border: 1px solid rgba(192, 145, 47, 0.35);
             border-radius: 10px;
+            width: 100%;
+            aspect-ratio: 4 / 3;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px;
+            overflow: hidden;
         }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: rgba(192, 145, 47, 0.5); 
-            border-radius: 10px;
+        .logo-plate.dark { background: #000; }
+        .logo-plate img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
         }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-            background: rgba(192, 145, 47, 0.8); 
+        /* Square logos (like CDM) fill more of the plate */
+        .logo-plate.square img { height: 100%; width: auto; }
+        /* Full-viewport sections */
+        .section-full {
+            min-height: 100vh;
+            min-height: 100dvh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
-        /* Leaflet Dark Map Invert Trick */
-        .dark-map-tiles {
-            filter: invert(100%) hue-rotate(180deg) brightness(85%) contrast(110%);
+        /* Map styles */
+        #us-map-svg { width: 100%; height: auto; display: block; }
+        #us-map-svg path.state {
+            fill: #14243b;
+            stroke: #06101e;
+            stroke-width: 0.6;
+            transition: fill 0.2s ease, filter 0.2s ease;
+        }
+        #us-map-svg path.state.mortgage { fill: #1e6ea8; }
+        #us-map-svg path.state.realty { fill: #c0912f; }
+        #us-map-svg path.state.both { fill: url(#stripe-gold-blue); }
+        #us-map-svg path.state:hover { filter: brightness(1.25); cursor: pointer; }
+        .map-legend-swatch {
+            width: 18px; height: 18px; border-radius: 4px; display: inline-block;
+            border: 1px solid rgba(255,255,255,0.15);
+        }
+        /* Map tooltip */
+        #map-tooltip {
+            position: absolute; pointer-events: none;
+            background: rgba(6,16,30,0.95);
+            border: 1px solid rgba(192,145,47,0.5);
+            color: #fff; padding: 8px 12px; border-radius: 8px;
+            font-size: 12px; letter-spacing: 0.05em;
+            transform: translate(-50%, -140%); white-space: nowrap;
+            opacity: 0; transition: opacity 0.15s ease;
+            z-index: 40;
         }
     </style>
 </head>
@@ -108,11 +164,11 @@
             <a href="#" class="flex items-center gap-2 relative z-10 group">
                 <span class="font-signature text-3xl md:text-4xl text-gold group-hover:text-gold-light transition-colors">Alex J. Heyen</span>
             </a>
-            
+
             <!-- Desktop Menu -->
             <div class="hidden md:flex space-x-8 items-center">
                 <a href="#services" class="text-sm tracking-widest uppercase font-medium text-gray-300 hover:text-gold transition-colors">Services</a>
-                <a href="#bio" class="text-sm tracking-widest uppercase font-medium text-gray-300 hover:text-gold transition-colors">About</a>
+                <a href="#coverage" class="text-sm tracking-widest uppercase font-medium text-gray-300 hover:text-gold transition-colors">Coverage</a>
                 <a href="#contact" class="text-sm tracking-widest uppercase font-medium text-gray-300 hover:text-gold transition-colors">Contact</a>
                 <a href="schedule.html" class="px-5 py-2.5 bg-gold hover:bg-gold-dark text-white text-sm font-semibold tracking-wide uppercase rounded-full transition-all shadow-[0_0_15px_rgba(192,145,47,0.4)]">Schedule Meeting</a>
             </div>
@@ -122,12 +178,12 @@
                 <i class="fa-solid fa-bars text-2xl"></i>
             </button>
         </div>
-        
+
         <!-- Mobile Menu Panel -->
         <div class="md:hidden hidden absolute top-full left-0 w-full bg-darkblue-800 border-b border-white/10" id="mobile-menu">
             <div class="flex flex-col px-6 py-4 space-y-4">
                 <a href="#services" class="text-sm tracking-widest uppercase font-medium text-gray-300 hover:text-gold transition-colors">Services</a>
-                <a href="#bio" class="text-sm tracking-widest uppercase font-medium text-gray-300 hover:text-gold transition-colors">About</a>
+                <a href="#coverage" class="text-sm tracking-widest uppercase font-medium text-gray-300 hover:text-gold transition-colors">Coverage</a>
                 <a href="#contact" class="text-sm tracking-widest uppercase font-medium text-gray-300 hover:text-gold transition-colors">Contact</a>
                 <a href="schedule.html" class="text-sm tracking-widest uppercase font-medium text-gold transition-colors">Schedule Meeting</a>
             </div>
@@ -135,111 +191,111 @@
     </nav>
 
     <!-- Hero / Bio Section -->
-    <header id="hero" class="relative bg-darkblue-900 overflow-hidden h-screen flex items-center justify-center pt-24">
-        <!-- Background Video Placeholder -->
-        <video autoplay loop muted playsinline class="absolute inset-0 w-full h-full object-cover z-0 opacity-20">
-            <!-- Replace this src with your actual introduction video URL -->
+    <header id="hero" class="section-full relative bg-darkblue-900 overflow-hidden pt-20">
+        <!-- Background Video -->
+        <video autoplay loop muted playsinline class="absolute inset-0 w-full h-full object-cover z-0 opacity-15">
             <source src="https://assets.mixkit.co/videos/preview/mixkit-modern-city-skyline-at-sunset-10025-large.mp4" type="video/mp4">
         </video>
-        <!-- Overlay -->
-        <div class="absolute inset-0 bg-darkblue-900/70 z-0"></div>
+        <div class="absolute inset-0 bg-gradient-to-b from-darkblue-900/85 via-darkblue-900/80 to-darkblue-900 z-0"></div>
+        <div class="absolute -left-32 top-1/3 w-96 h-96 bg-gold/10 rounded-full blur-3xl z-0"></div>
 
-        <div class="max-w-5xl mx-auto px-6 relative z-10 w-full text-center">
-            
-            <!-- Headshot -->
-            <div class="mx-auto w-32 h-32 md:w-40 md:h-40 rounded-full overflow-hidden border-4 border-gold/30 shadow-2xl mb-6 relative group">
-                <img src="headshot.png" alt="Alex J. Heyen Headshot" class="w-full h-full object-cover">
-                <div class="absolute inset-0 rounded-full shadow-inner shadow-black/50 pointer-events-none"></div>
-            </div>
-            
-            <!-- Bio Content -->
-            <h2 class="text-gold tracking-[0.2em] uppercase text-xs font-bold mb-3">Expertise & Integrity</h2>
-            <h1 class="font-serif text-3xl md:text-5xl font-bold mb-6 leading-tight">Meet Alex J. Heyen</h1>
-            
-            <div class="text-gray-300 font-light text-sm md:text-base leading-relaxed max-w-4xl mx-auto mb-8">
-                <p>
-                    As a dual-licensed professional bridging real estate and finance, I provide comprehensive, seamless solutions for my clients. Whether you are navigating property acquisition through Flatwater Realty, securing optimal financing via District Lending, or protecting your investment with Flatwater Title and Escrow, you receive holistic guidance tailored to your unique goals.
-                </p>
-            </div>
-            
-            <!-- Actions -->
-            <div class="flex flex-col sm:flex-row justify-center items-center gap-4">
-                <a href="#services" class="px-8 py-3.5 bg-gold hover:bg-gold-dark text-white text-xs md:text-sm font-semibold tracking-wide uppercase rounded-full transition-all shadow-[0_0_20px_rgba(192,145,47,0.3)] w-full sm:w-auto text-center">
-                    Explore Services
-                </a>
-                <button id="open-video-btn" class="px-8 py-3.5 bg-transparent border border-white/30 hover:border-gold hover:bg-white/5 text-white text-xs md:text-sm font-semibold tracking-wide uppercase rounded-full transition-all flex items-center justify-center gap-2 w-full sm:w-auto group">
-                    <i class="fa-solid fa-play text-gold group-hover:scale-110 transition-transform"></i> Watch Video
-                </button>
-            </div>
-            
-            <div class="mt-8 hidden md:block">
-                <span class="font-signature text-2xl md:text-3xl text-gold/50">Alex J. Heyen</span>
+        <div class="max-w-7xl mx-auto px-6 py-4 relative z-10 w-full">
+            <div class="grid grid-cols-1 lg:grid-cols-5 gap-6 lg:gap-12 items-center">
+
+                <!-- Prominent Headshot -->
+                <div class="lg:col-span-2 flex justify-center lg:justify-start">
+                    <div class="headshot-frame rounded-2xl overflow-hidden w-full max-w-[280px] sm:max-w-[320px] md:max-w-[360px] lg:max-w-[420px] aspect-[3/4] max-h-[52vh] lg:max-h-[80vh]">
+                        <img src="headshot.png" alt="Alex J. Heyen" class="w-full h-full object-cover object-center">
+                    </div>
+                </div>
+
+                <!-- Bio Content -->
+                <div class="lg:col-span-3 text-center lg:text-left">
+                    <h2 class="text-gold tracking-[0.25em] uppercase text-[10px] md:text-xs font-bold mb-2 md:mb-3">Expertise & Integrity</h2>
+                    <h1 class="font-serif text-2xl sm:text-3xl md:text-5xl font-bold mb-3 md:mb-5 leading-[1.05]">
+                        Meet <span class="text-gradient">Alex J. Heyen</span>
+                    </h1>
+
+                    <p class="text-gray-300 font-light text-xs sm:text-sm md:text-base leading-relaxed mb-4 md:mb-6 max-w-2xl mx-auto lg:mx-0">
+                        As a dual-licensed professional bridging real estate and finance, I provide comprehensive, seamless solutions for my clients. Whether you are navigating property acquisition through Flatwater Realty, securing optimal financing via Client Direct Mortgage, or protecting your investment with Flatwater Title and Escrow, you receive holistic guidance tailored to your unique goals.
+                    </p>
+
+                    <div class="flex flex-col sm:flex-row justify-center lg:justify-start items-center gap-3">
+                        <a href="#services" class="px-6 md:px-8 py-2.5 md:py-3 bg-gold hover:bg-gold-dark text-white text-[11px] md:text-sm font-semibold tracking-wide uppercase rounded-full transition-all shadow-[0_0_20px_rgba(192,145,47,0.3)] w-full sm:w-auto text-center">
+                            Explore Services
+                        </a>
+                        <button id="open-video-btn" class="px-6 md:px-8 py-2.5 md:py-3 bg-transparent border border-white/30 hover:border-gold hover:bg-white/5 text-white text-[11px] md:text-sm font-semibold tracking-wide uppercase rounded-full transition-all flex items-center justify-center gap-2 w-full sm:w-auto group">
+                            <i class="fa-solid fa-play text-gold group-hover:scale-110 transition-transform"></i> Watch Video
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </header>
 
     <!-- Services Section -->
-    <section id="services" class="py-24 bg-darkblue-800 relative">
-        <div class="max-w-7xl mx-auto px-6">
-            <div class="text-center mb-16">
-                <h2 class="text-gold tracking-[0.2em] uppercase text-xs font-bold mb-3">Portfolio</h2>
-                <h3 class="font-serif text-4xl md:text-5xl font-bold">Professional Services</h3>
+    <section id="services" class="section-full py-16 bg-darkblue-800 relative">
+        <div class="max-w-7xl mx-auto px-6 w-full">
+            <div class="text-center mb-8 md:mb-10">
+                <h2 class="text-gold tracking-[0.2em] uppercase text-xs font-bold mb-2">Portfolio</h2>
+                <h3 class="font-serif text-2xl sm:text-3xl md:text-4xl font-bold">Professional Services</h3>
             </div>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-5">
                 <!-- Flatwater Realty -->
-                <a href="https://www.flatwaterrealty.com" target="_blank" rel="noopener noreferrer" class="glass-card rounded-2xl p-8 flex flex-col group relative overflow-hidden h-full">
+                <a href="https://www.flatwaterrealty.com" target="_blank" rel="noopener noreferrer" class="glass-card rounded-xl p-3 sm:p-4 flex flex-col group relative overflow-hidden h-full">
                     <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-gold-light to-gold opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                    <div class="w-14 h-14 bg-darkblue-900 border border-gold/30 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                        <i class="fa-solid fa-house text-gold text-2xl"></i>
+                    <div class="logo-plate mb-3">
+                        <img src="flatwater-realty-logo.svg" alt="Flatwater Realty">
                     </div>
-                    <h4 class="text-sm text-gold tracking-widest uppercase font-bold mb-2">Real Estate</h4>
-                    <h5 class="text-2xl font-serif font-semibold mb-4 text-white">Flatwater Realty</h5>
-                    <p class="text-gray-400 font-light text-sm mb-6 flex-grow">Premium real estate services guiding you to the perfect property with localized expertise.</p>
-                    <div class="text-white text-sm font-medium flex items-center gap-2 group-hover:text-gold transition-colors mt-auto">
-                        Learn More <i class="fa-solid fa-arrow-right text-xs"></i>
+                    <h4 class="text-[10px] sm:text-xs text-gold tracking-widest uppercase font-bold mb-1">Real Estate</h4>
+                    <h5 class="text-base sm:text-lg md:text-xl font-serif font-semibold mb-1 sm:mb-2 text-white leading-tight">Flatwater Realty</h5>
+                    <p class="text-gray-400 font-light text-[11px] sm:text-xs md:text-sm mb-3 flex-grow leading-snug">Premium real estate services guiding you to the perfect property with localized expertise.</p>
+                    <div class="text-white text-[11px] sm:text-xs md:text-sm font-medium flex items-center gap-2 group-hover:text-gold transition-colors mt-auto">
+                        Learn More <i class="fa-solid fa-arrow-right text-[10px]"></i>
                     </div>
                 </a>
 
-                <!-- District Lending -->
-                <a href="https://districtlending.com/" target="_blank" rel="noopener noreferrer" class="glass-card rounded-2xl p-8 flex flex-col group relative overflow-hidden h-full">
+                <!-- Client Direct Mortgage -->
+                <a href="https://www.clientdirectmtg.com/lo/alex-heyen" target="_blank" rel="noopener noreferrer" class="glass-card rounded-xl p-3 sm:p-4 flex flex-col group relative overflow-hidden h-full">
                     <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-gold-light to-gold opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                    <div class="w-14 h-14 bg-darkblue-900 border border-gold/30 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                        <i class="fa-solid fa-money-bill-trend-up text-gold text-2xl"></i>
+                    <div class="logo-plate dark square mb-3">
+                        <img src="client-direct-mortgage-logo.png" alt="Client Direct Mortgage">
                     </div>
-                    <h4 class="text-sm text-gold tracking-widest uppercase font-bold mb-2">Mortgage</h4>
-                    <h5 class="text-2xl font-serif font-semibold mb-4 text-white">District Lending</h5>
-                    <p class="text-gray-400 font-light text-sm mb-6 flex-grow">Apply for a Mortgage or Refinance Loan Online with competitive rates and seamless processes.</p>
-                    <div class="text-white text-sm font-medium flex items-center gap-2 group-hover:text-gold transition-colors mt-auto">
-                        Learn More <i class="fa-solid fa-arrow-right text-xs"></i>
+                    <h4 class="text-[10px] sm:text-xs text-gold tracking-widest uppercase font-bold mb-1">Mortgage</h4>
+                    <h5 class="text-base sm:text-lg md:text-xl font-serif font-semibold mb-1 text-white leading-tight">Client Direct Mortgage</h5>
+                    <p class="text-[9px] sm:text-[10px] text-gray-500 tracking-widest uppercase font-medium mb-2">NMLS# 2075179</p>
+                    <p class="text-gray-400 font-light text-[11px] sm:text-xs md:text-sm mb-3 flex-grow leading-snug">Apply for a mortgage or refinance online with competitive rates and a seamless, direct process.</p>
+                    <div class="text-white text-[11px] sm:text-xs md:text-sm font-medium flex items-center gap-2 group-hover:text-gold transition-colors mt-auto">
+                        Learn More <i class="fa-solid fa-arrow-right text-[10px]"></i>
                     </div>
                 </a>
 
                 <!-- Flatwater Title and Escrow -->
-                <a href="#" class="glass-card rounded-2xl p-8 flex flex-col group relative overflow-hidden h-full">
+                <a href="https://www.flatwatertitle.com" target="_blank" rel="noopener noreferrer" class="glass-card rounded-xl p-3 sm:p-4 flex flex-col group relative overflow-hidden h-full">
                     <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-gold-light to-gold opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                    <div class="w-14 h-14 bg-darkblue-900 border border-gold/30 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                        <i class="fa-solid fa-shield-halved text-gold text-2xl"></i>
+                    <div class="logo-plate mb-3">
+                        <img src="flatwater-title-logo.webp" alt="Flatwater Title and Escrow">
                     </div>
-                    <h4 class="text-sm text-gold tracking-widest uppercase font-bold mb-2">Title Insurance</h4>
-                    <h5 class="text-2xl font-serif font-semibold mb-4 text-white">Flatwater Title</h5>
-                    <p class="text-gray-400 font-light text-sm mb-6 flex-grow">Ensuring your property transactions are secure, protected, and legally sound.</p>
-                    <div class="text-white text-sm font-medium flex items-center gap-2 group-hover:text-gold transition-colors mt-auto">
-                        Learn More <i class="fa-solid fa-arrow-right text-xs"></i>
+                    <h4 class="text-[10px] sm:text-xs text-gold tracking-widest uppercase font-bold mb-1">Title Insurance</h4>
+                    <h5 class="text-base sm:text-lg md:text-xl font-serif font-semibold mb-1 sm:mb-2 text-white leading-tight">Flatwater Title</h5>
+                    <p class="text-gray-400 font-light text-[11px] sm:text-xs md:text-sm mb-3 flex-grow leading-snug">Ensuring your property transactions are secure, protected, and legally sound.</p>
+                    <div class="text-white text-[11px] sm:text-xs md:text-sm font-medium flex items-center gap-2 group-hover:text-gold transition-colors mt-auto">
+                        Learn More <i class="fa-solid fa-arrow-right text-[10px]"></i>
                     </div>
                 </a>
 
                 <!-- Dual License Coaching -->
-                <a href="#" class="glass-card rounded-2xl p-8 flex flex-col group relative overflow-hidden h-full">
+                <a href="#" class="glass-card rounded-xl p-3 sm:p-4 flex flex-col group relative overflow-hidden h-full">
                     <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-gold-light to-gold opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                    <div class="w-14 h-14 bg-darkblue-900 border border-gold/30 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                        <i class="fa-solid fa-chalkboard-user text-gold text-2xl"></i>
+                    <div class="logo-plate mb-3" style="background: linear-gradient(135deg,#0a192f,#112240);">
+                        <i class="fa-solid fa-chalkboard-user text-gold text-3xl sm:text-4xl"></i>
                     </div>
-                    <h4 class="text-sm text-gold tracking-widest uppercase font-bold mb-2">Mentorship</h4>
-                    <h5 class="text-2xl font-serif font-semibold mb-4 text-white">Dual License Coaching</h5>
-                    <p class="text-gray-400 font-light text-sm mb-6 flex-grow">Empowering professionals to navigate and succeed with dual licensing strategies.</p>
-                    <div class="text-white text-sm font-medium flex items-center gap-2 group-hover:text-gold transition-colors mt-auto">
-                        Learn More <i class="fa-solid fa-arrow-right text-xs"></i>
+                    <h4 class="text-[10px] sm:text-xs text-gold tracking-widest uppercase font-bold mb-1">Mentorship</h4>
+                    <h5 class="text-base sm:text-lg md:text-xl font-serif font-semibold mb-1 sm:mb-2 text-white leading-tight">Dual License Coaching</h5>
+                    <p class="text-gray-400 font-light text-[11px] sm:text-xs md:text-sm mb-3 flex-grow leading-snug">Empowering professionals to navigate and succeed with dual licensing strategies.</p>
+                    <div class="text-white text-[11px] sm:text-xs md:text-sm font-medium flex items-center gap-2 group-hover:text-gold transition-colors mt-auto">
+                        Learn More <i class="fa-solid fa-arrow-right text-[10px]"></i>
                     </div>
                 </a>
             </div>
@@ -247,71 +303,53 @@
     </section>
 
     <!-- Coverage Section -->
-    <section class="py-20 bg-darkblue-800 border-t border-b border-white/5 relative overflow-hidden">
-        <!-- Ambient Glow -->
+    <section id="coverage" class="section-full py-12 bg-darkblue-900 border-t border-b border-white/5 relative overflow-hidden">
         <div class="absolute right-0 top-0 w-1/2 h-full bg-darkblue-700/30 blur-3xl rounded-full"></div>
         <div class="absolute left-0 bottom-0 w-1/3 h-1/2 bg-gold/5 blur-3xl rounded-full"></div>
-        
-        <div class="max-w-7xl mx-auto px-6 relative z-10 text-center">
-            <h2 class="text-gold tracking-[0.2em] uppercase text-xs font-bold mb-3">Coverage</h2>
-            <h3 class="font-serif text-3xl md:text-5xl font-bold mb-6">Licensed States</h3>
-            <p class="text-gray-400 font-light mb-12 max-w-2xl mx-auto">
-                Operating across multiple jurisdictions to serve your needs effectively. We are proud to hold active operational licenses and local market expertise in the following regions.
+
+        <div class="max-w-7xl mx-auto px-6 relative z-10 text-center w-full">
+            <h2 class="text-gold tracking-[0.2em] uppercase text-[10px] md:text-xs font-bold mb-2">Coverage</h2>
+            <h3 class="font-serif text-2xl sm:text-3xl md:text-4xl font-bold mb-2">Licensed States</h3>
+            <p class="text-gray-400 font-light text-xs md:text-sm mb-3 max-w-2xl mx-auto">
+                Hover a state to see coverage details.
             </p>
-            
+
+            <!-- Legend -->
+            <div class="flex flex-wrap justify-center gap-3 sm:gap-5 mb-3 text-xs sm:text-sm">
+                <div class="flex items-center gap-2">
+                    <span class="map-legend-swatch" style="background:#c0912f"></span>
+                    <span class="text-gray-300">Real Estate</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="map-legend-swatch" style="background:#1e6ea8"></span>
+                    <span class="text-gray-300">Mortgage</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="map-legend-swatch" style="background:linear-gradient(45deg,#c0912f 0 25%,#1e6ea8 25% 50%,#c0912f 50% 75%,#1e6ea8 75% 100%)"></span>
+                    <span class="text-gray-300">Both</span>
+                </div>
+            </div>
         </div>
-            
-        <!-- Real Interactive Map (Full Width) -->
-        <div class="w-full relative z-20 mt-4">
-            <div id="real-us-map" class="w-full h-[300px] md:h-[400px] z-10" style="background-color: #06101e; border-top: 1px solid rgba(255,255,255,0.05); border-bottom: 1px solid rgba(255,255,255,0.05);"></div>
+
+        <!-- Interactive US Map -->
+        <div class="max-w-6xl mx-auto px-2 sm:px-6 relative w-full">
+            <div id="us-map-container" class="relative flex justify-center">
+                <svg id="us-map-svg" viewBox="0 0 960 600" xmlns="http://www.w3.org/2000/svg" style="max-height: 70vh;">
+                    <defs>
+                        <pattern id="stripe-gold-blue" patternUnits="userSpaceOnUse" width="12" height="12" patternTransform="rotate(45)">
+                            <rect width="6" height="12" fill="#c0912f"/>
+                            <rect x="6" width="6" height="12" fill="#1e6ea8"/>
+                        </pattern>
+                    </defs>
+                </svg>
+                <div id="map-tooltip"></div>
+            </div>
         </div>
-            
-        <script>
-                document.addEventListener("DOMContentLoaded", function() {
-                    // Initialize Leaflet map
-                    var map = L.map('real-us-map', {
-                        center: [39.8283, -98.5795], // Center of US
-                        zoom: 4,
-                        zoomControl: true,
-                        scrollWheelZoom: false, // Prevent page scrolling getting trapped
-                        dragging: true
-                    });
-
-                    // Add OpenStreetMap tile layer with CSS invert for free premium dark aesthetic
-                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                        attribution: '&copy; OpenStreetMap contributors',
-                        maxZoom: 10,
-                        minZoom: 3,
-                        className: 'dark-map-tiles'
-                    }).addTo(map);
-
-                    // Function to create Custom Gold Pin with Name
-                    function createPinWithName(name) {
-                        return L.divIcon({
-                            className: 'custom-pin-with-name',
-                            html: "<div style='display:flex; align-items:center; gap:8px; pointer-events:none;'>" +
-                                  "<div style='background-color:#c0912f; width:14px; height:14px; border-radius:50%; box-shadow: 0 0 15px #c0912f; border: 2px solid white; flex-shrink:0;'></div>" +
-                                  "<span style='color: white; font-weight: 700; font-family: Inter, sans-serif; font-size: 14px; text-shadow: 0 2px 4px rgba(0,0,0,0.9), 0 0 10px rgba(0,0,0,0.8); letter-spacing: 1px;'>" + name + "</span>" +
-                                  "</div>",
-                            iconSize: [120, 20],
-                            iconAnchor: [7, 10]
-                        });
-                    }
-
-                    // Coordinates
-                    var coloradoCoords = [39.5501, -105.7821];
-                    var nebraskaCoords = [41.5000, -99.9018];
-
-                    // Add Markers with Names visible by default
-                    L.marker(coloradoCoords, {icon: createPinWithName('COLORADO')}).addTo(map);
-                    L.marker(nebraskaCoords, {icon: createPinWithName('NEBRASKA')}).addTo(map);
-                });
-            </script>
     </section>
 
     <!-- Calendar Section -->
-    <section id="schedule" class="py-24 bg-darkblue-900 border-b border-white/5">
-        <div class="max-w-3xl mx-auto px-6 text-center">
+    <section id="schedule" class="section-full py-16 bg-darkblue-800 border-b border-white/5">
+        <div class="max-w-3xl mx-auto px-6 text-center w-full">
             <h2 class="text-gold tracking-[0.2em] uppercase text-xs font-bold mb-2">Booking</h2>
             <h3 class="font-serif text-3xl md:text-4xl font-bold mb-4">Schedule a Meeting</h3>
             <p class="text-gray-400 font-light mb-8">
@@ -324,36 +362,36 @@
     </section>
 
     <!-- Contact Section -->
-    <section id="contact" class="py-24 bg-darkblue-800">
-        <div class="max-w-3xl mx-auto px-6">
-            <div class="text-center mb-12">
-                <h2 class="text-gold tracking-[0.2em] uppercase text-xs font-bold mb-3">Inquiries</h2>
-                <h3 class="font-serif text-3xl md:text-4xl font-bold mb-6">Get In Touch</h3>
-                <p class="text-gray-400 font-light">
+    <section id="contact" class="section-full py-16 bg-darkblue-900">
+        <div class="max-w-3xl mx-auto px-6 w-full">
+            <div class="text-center mb-6 md:mb-8">
+                <h2 class="text-gold tracking-[0.2em] uppercase text-[10px] md:text-xs font-bold mb-2">Inquiries</h2>
+                <h3 class="font-serif text-2xl md:text-4xl font-bold mb-2">Get In Touch</h3>
+                <p class="text-gray-400 font-light text-xs md:text-sm">
                     Prefer to send a message? Fill out the form below and our team will get back to you promptly.
                 </p>
             </div>
-            
-            <form class="space-y-6">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+            <form class="space-y-3 md:space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
                     <div>
-                        <label for="name" class="block text-xs font-medium text-gray-400 uppercase tracking-wider mb-2">Full Name</label>
-                        <input type="text" id="name" class="w-full bg-darkblue-900 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold transition-colors" placeholder="e.g., Michael Smith">
+                        <label for="name" class="block text-[10px] md:text-xs font-medium text-gray-400 uppercase tracking-wider mb-1">Full Name</label>
+                        <input type="text" id="name" class="w-full bg-darkblue-800 border border-white/10 rounded-lg px-3 py-2 md:py-2.5 text-sm text-white focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold transition-colors" placeholder="e.g., Michael Smith">
                     </div>
                     <div>
-                        <label for="email" class="block text-xs font-medium text-gray-400 uppercase tracking-wider mb-2">Email Address</label>
-                        <input type="email" id="email" class="w-full bg-darkblue-900 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold transition-colors" placeholder="e.g., michael@company.com">
+                        <label for="email" class="block text-[10px] md:text-xs font-medium text-gray-400 uppercase tracking-wider mb-1">Email Address</label>
+                        <input type="email" id="email" class="w-full bg-darkblue-800 border border-white/10 rounded-lg px-3 py-2 md:py-2.5 text-sm text-white focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold transition-colors" placeholder="e.g., michael@company.com">
                     </div>
                 </div>
                 <div>
-                    <label for="phone" class="block text-xs font-medium text-gray-400 uppercase tracking-wider mb-2">Phone Number</label>
-                    <input type="tel" id="phone" class="w-full bg-darkblue-900 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold transition-colors" placeholder="e.g., (303) 555-0198">
+                    <label for="phone" class="block text-[10px] md:text-xs font-medium text-gray-400 uppercase tracking-wider mb-1">Phone Number</label>
+                    <input type="tel" id="phone" class="w-full bg-darkblue-800 border border-white/10 rounded-lg px-3 py-2 md:py-2.5 text-sm text-white focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold transition-colors" placeholder="e.g., (303) 555-0198">
                 </div>
                 <div>
-                    <label for="message" class="block text-xs font-medium text-gray-400 uppercase tracking-wider mb-2">Message</label>
-                    <textarea id="message" rows="4" class="w-full bg-darkblue-900 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold transition-colors resize-none" placeholder="Please describe your real estate or financing needs..."></textarea>
+                    <label for="message" class="block text-[10px] md:text-xs font-medium text-gray-400 uppercase tracking-wider mb-1">Message</label>
+                    <textarea id="message" rows="3" class="w-full bg-darkblue-800 border border-white/10 rounded-lg px-3 py-2 md:py-2.5 text-sm text-white focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold transition-colors resize-none" placeholder="Please describe your real estate or financing needs..."></textarea>
                 </div>
-                <button type="button" class="w-full px-8 py-4 bg-gold hover:bg-gold-dark text-white text-sm font-semibold tracking-wide uppercase rounded-lg transition-all shadow-[0_4px_14px_0_rgba(192,145,47,0.39)]">
+                <button type="button" class="w-full px-6 py-3 bg-gold hover:bg-gold-dark text-white text-xs md:text-sm font-semibold tracking-wide uppercase rounded-lg transition-all shadow-[0_4px_14px_0_rgba(192,145,47,0.39)]">
                     Send Message
                 </button>
             </form>
@@ -367,13 +405,28 @@
                 <div>
                     <span class="font-signature text-3xl text-gray-500 hover:text-gold transition-colors">Alex J. Heyen</span>
                 </div>
-                <div class="flex space-x-6">
-                    <a href="#" class="text-gray-500 hover:text-gold transition-colors"><i class="fa-brands fa-linkedin text-xl"></i></a>
-                    <a href="#" class="text-gray-500 hover:text-gold transition-colors"><i class="fa-brands fa-instagram text-xl"></i></a>
-                    <a href="#" class="text-gray-500 hover:text-gold transition-colors"><i class="fa-brands fa-facebook text-xl"></i></a>
+                <div class="flex space-x-5 items-center">
+                    <a href="https://www.facebook.com/FWRealtyUS" target="_blank" rel="noopener noreferrer" aria-label="Flatwater Realty on Facebook" class="text-gray-500 hover:text-gold transition-colors" title="Flatwater Realty">
+                        <i class="fa-brands fa-facebook text-xl"></i>
+                    </a>
+                    <a href="https://www.facebook.com/alexjheyen" target="_blank" rel="noopener noreferrer" aria-label="Alex Heyen on Facebook" class="text-gray-500 hover:text-gold transition-colors" title="Alex Heyen">
+                        <i class="fa-brands fa-facebook-f text-xl"></i>
+                    </a>
+                    <a href="https://www.instagram.com/alex.heyen" target="_blank" rel="noopener noreferrer" aria-label="Instagram" class="text-gray-500 hover:text-gold transition-colors">
+                        <i class="fa-brands fa-instagram text-xl"></i>
+                    </a>
+                    <a href="https://www.linkedin.com/in/alex-heyen/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" class="text-gray-500 hover:text-gold transition-colors">
+                        <i class="fa-brands fa-linkedin text-xl"></i>
+                    </a>
+                    <a href="https://www.tiktok.com/@alexheyen" target="_blank" rel="noopener noreferrer" aria-label="TikTok" class="text-gray-500 hover:text-gold transition-colors">
+                        <i class="fa-brands fa-tiktok text-xl"></i>
+                    </a>
                 </div>
             </div>
-            <div class="mt-8 text-center md:text-left text-gray-600 text-xs font-light">
+            <div class="mt-8 text-center md:text-left text-gray-600 text-xs font-light leading-relaxed">
+                <p class="mb-1">
+                    NMLS #1065732 &middot; Equal Housing Opportunity &middot; 4838 Nicholas St. Suite 305 Omaha, NE 68131
+                </p>
                 <p>&copy; 2026 Alex J. Heyen. All rights reserved.</p>
             </div>
         </div>
@@ -384,17 +437,9 @@
         // Mobile Menu
         const btn = document.getElementById('mobile-menu-btn');
         const menu = document.getElementById('mobile-menu');
-
-        btn.addEventListener('click', () => {
-            menu.classList.toggle('hidden');
-        });
-
-        // Close mobile menu when a link is clicked
-        const links = menu.querySelectorAll('a');
-        links.forEach(link => {
-            link.addEventListener('click', () => {
-                menu.classList.add('hidden');
-            });
+        btn.addEventListener('click', () => menu.classList.toggle('hidden'));
+        menu.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => menu.classList.add('hidden'));
         });
 
         // Navbar Scroll Effect
@@ -408,33 +453,113 @@
                 navbar.classList.remove('bg-darkblue-900/95', 'backdrop-blur-md', 'border-white/10', 'shadow-lg');
             }
         });
+
         // Video Modal Logic
         const openVideoBtn = document.getElementById('open-video-btn');
         const closeVideoBtn = document.getElementById('close-video-btn');
         const videoModal = document.getElementById('video-modal');
         const modalVideo = document.getElementById('modal-video');
-
         if (openVideoBtn && closeVideoBtn && videoModal && modalVideo) {
             openVideoBtn.addEventListener('click', () => {
                 videoModal.classList.remove('hidden');
                 videoModal.classList.add('flex');
                 modalVideo.play();
             });
-
             closeVideoBtn.addEventListener('click', () => {
                 videoModal.classList.add('hidden');
                 videoModal.classList.remove('flex');
                 modalVideo.pause();
                 modalVideo.currentTime = 0;
             });
-
-            // Close on background click
             videoModal.addEventListener('click', (e) => {
-                if (e.target === videoModal) {
-                    closeVideoBtn.click();
-                }
+                if (e.target === videoModal) closeVideoBtn.click();
             });
         }
+
+        // Interactive US Map
+        (function initUSMap() {
+            // FIPS -> state name
+            const STATE_NAMES = {
+                "01":"Alabama","02":"Alaska","04":"Arizona","05":"Arkansas","06":"California",
+                "08":"Colorado","09":"Connecticut","10":"Delaware","11":"District of Columbia",
+                "12":"Florida","13":"Georgia","15":"Hawaii","16":"Idaho","17":"Illinois",
+                "18":"Indiana","19":"Iowa","20":"Kansas","21":"Kentucky","22":"Louisiana",
+                "23":"Maine","24":"Maryland","25":"Massachusetts","26":"Michigan","27":"Minnesota",
+                "28":"Mississippi","29":"Missouri","30":"Montana","31":"Nebraska","32":"Nevada",
+                "33":"New Hampshire","34":"New Jersey","35":"New Mexico","36":"New York",
+                "37":"North Carolina","38":"North Dakota","39":"Ohio","40":"Oklahoma","41":"Oregon",
+                "42":"Pennsylvania","44":"Rhode Island","45":"South Carolina","46":"South Dakota",
+                "47":"Tennessee","48":"Texas","49":"Utah","50":"Vermont","51":"Virginia",
+                "53":"Washington","54":"West Virginia","55":"Wisconsin","56":"Wyoming"
+            };
+
+            // Coverage sets (FIPS codes)
+            const REALTY = new Set(["31","08"]); // Nebraska, Colorado
+            const MORTGAGE = new Set([
+                "01","08","10","12","19","20","21","23","26","27","31","41","47","51","53","56"
+            ]);
+
+            function categoryFor(fips) {
+                const r = REALTY.has(fips), m = MORTGAGE.has(fips);
+                if (r && m) return 'both';
+                if (r) return 'realty';
+                if (m) return 'mortgage';
+                return null;
+            }
+
+            const svg = d3.select('#us-map-svg');
+            const tooltip = document.getElementById('map-tooltip');
+            const container = document.getElementById('us-map-container');
+
+            const width = 960, height = 600;
+            const projection = d3.geoAlbersUsa().scale(1200).translate([width / 2, height / 2]);
+            const path = d3.geoPath().projection(projection);
+
+            d3.json('https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json').then(us => {
+                const states = topojson.feature(us, us.objects.states).features;
+                svg.append('g')
+                    .selectAll('path')
+                    .data(states)
+                    .join('path')
+                    .attr('d', path)
+                    .attr('class', d => {
+                        const fips = String(d.id).padStart(2, '0');
+                        const cat = categoryFor(fips);
+                        return 'state' + (cat ? ' ' + cat : '');
+                    })
+                    .attr('data-name', d => STATE_NAMES[String(d.id).padStart(2,'0')] || '')
+                    .attr('data-cat', d => categoryFor(String(d.id).padStart(2,'0')) || 'none')
+                    .on('mousemove', function(event, d) {
+                        const rect = container.getBoundingClientRect();
+                        const name = this.getAttribute('data-name');
+                        const cat = this.getAttribute('data-cat');
+                        const label = {
+                            'realty': 'Real Estate',
+                            'mortgage': 'Mortgage',
+                            'both': 'Real Estate + Mortgage',
+                            'none': 'Not currently licensed'
+                        }[cat];
+                        tooltip.innerHTML = '<strong style="color:#e3c98a">' + name + '</strong><br>' +
+                            '<span style="opacity:.85">' + label + '</span>';
+                        tooltip.style.left = (event.clientX - rect.left) + 'px';
+                        tooltip.style.top = (event.clientY - rect.top) + 'px';
+                        tooltip.style.opacity = 1;
+                    })
+                    .on('mouseleave', function() { tooltip.style.opacity = 0; });
+
+                // Add state borders
+                svg.append('path')
+                    .datum(topojson.mesh(us, us.objects.states, (a, b) => a !== b))
+                    .attr('fill', 'none')
+                    .attr('stroke', '#06101e')
+                    .attr('stroke-width', 0.8)
+                    .attr('stroke-linejoin', 'round')
+                    .attr('d', path);
+            }).catch(err => {
+                console.error('US map failed to load:', err);
+                container.innerHTML = '<p class="text-center text-gray-500 py-12">Coverage map unavailable.</p>';
+            });
+        })();
     </script>
 
     <!-- Video Modal -->

@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 280" preserveAspectRatio="xMidYMid meet">
+  <defs>
+    <linearGradient id="gold-grad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#e6c76a"/>
+      <stop offset="50%" stop-color="#c0912f"/>
+      <stop offset="100%" stop-color="#a87426"/>
+    </linearGradient>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&amp;family=Yellowtail&amp;display=swap');
+      .fw-title { font-family: 'Playfair Display', 'Times New Roman', serif; font-weight: 900; letter-spacing: 8px; fill: #111; }
+      .fw-realty { font-family: 'Yellowtail', cursive; fill: url(#gold-grad); }
+    </style>
+  </defs>
+  <!-- Gold double border rectangle -->
+  <rect x="18" y="18" width="664" height="244" fill="none" stroke="url(#gold-grad)" stroke-width="6" rx="2"/>
+  <rect x="30" y="30" width="640" height="220" fill="none" stroke="url(#gold-grad)" stroke-width="1.2" rx="2"/>
+  <!-- FLATWATER text -->
+  <text x="350" y="150" text-anchor="middle" class="fw-title" font-size="78">FLATWATER</text>
+  <!-- Realty cursive -->
+  <text x="530" y="228" text-anchor="middle" class="fw-realty" font-size="86">Realty</text>
+</svg>
